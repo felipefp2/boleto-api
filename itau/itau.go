@@ -2,6 +2,7 @@ package itau
 
 import (
 	"errors"
+	"github.com/mundipagg/goseq"
 	"strings"
 
 	. "github.com/PMoneda/flow"
@@ -38,6 +39,21 @@ func (b bankItau) Log() *log.Log {
 	return b.log
 }
 
+var (
+	seqLog *goseq.Logger
+)
+
+func LogResponse(op string, contentHeader interface{}, contentBody interface{}, requestKey string) {
+	seqLog, _ = goseq.GetLogger(config.Get().SEQUrl, config.Get().SEQAPIKey)
+	prop := goseq.NewProperties()
+	prop.AddProperty("Application", "BoletoOnline")
+	prop.AddProperty("Response", contentBody)
+	prop.AddProperty("Header", contentHeader)
+	prop.AddProperty("RequestKey", requestKey)
+	seqLog.Information("[Response - BancoItau - " + op + "]", prop)
+}
+
+
 func (b bankItau) GetTicket(boleto *models.BoletoRequest) (string, error) {
 	timing := metrics.GetTimingMetrics()
 	pipe := NewFlow()
@@ -47,6 +63,8 @@ func (b bankItau) GetTicket(boleto *models.BoletoRequest) (string, error) {
 	duration := util.Duration(func() {
 		pipe.To(url, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutToken})
 	})
+	LogResponse("Ticket", pipe.GetHeader(), pipe.GetBody(), boleto.RequestKey)
+
 	timing.Push("itau-get-ticket-boleto-time", duration.Seconds())
 	pipe.To("logseq://?type=response&url="+url, b.log)
 	ch := pipe.Choice()
@@ -83,6 +101,9 @@ func (b bankItau) RegisterBoleto(input *models.BoletoRequest) (models.BoletoResp
 	duration := util.Duration(func() {
 		exec.To(itauURL, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutRegister})
 	})
+
+	LogResponse("Registro", exec.GetHeader(), exec.GetBody(), input.RequestKey)
+
 	timing.Push("itau-register-boleto-time", duration.Seconds())
 	exec.To("logseq://?type=response&url="+itauURL, b.log)
 
