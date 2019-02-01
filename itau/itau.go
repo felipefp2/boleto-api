@@ -50,7 +50,8 @@ func LogResponse(op string, contentHeader interface{}, contentBody interface{}, 
 	prop.AddProperty("Response", contentBody)
 	prop.AddProperty("Header", contentHeader)
 	prop.AddProperty("RequestKey", requestKey)
-	seqLog.Information("[Response - BancoItau - " + op + "]", prop)
+	prop.AddProperty("BankName", "Itau")
+	seqLog.Information("[BoletoOnline: RegisterBoleto] - Response - From Itau - " + op + "]", prop)
 }
 
 
