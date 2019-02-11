@@ -2,15 +2,19 @@ package util
 
 import (
 	"crypto"
+	"crypto/md5"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/mundipagg/goseq"
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -96,14 +100,14 @@ func BuildTLSTransport(crtPath string, keyPath string, caPath string) (*http.Tra
 }
 
 //Sigs request
-func SignRequest(request string) (string, error) {
+func SignRequest(request string, requestKey string) (string, error) {
 
-	pkey, err := parsePrivateKey()
+	pkey, md5Pkey, err := parsePrivateKey()
 	if err != nil {
 		return "", err
 	}
 
-	chainCertificates, err := parseChainCertificates()
+	chainCertificates, md5Chain, err := parseChainCertificates()
 	if err != nil {
 		return "", err
 	}
@@ -124,54 +128,87 @@ func SignRequest(request string) (string, error) {
 
 	signedRequest := base64.StdEncoding.EncodeToString(detachedSignature)
 
+	LogAssign(len(detachedSignature), signedRequest, md5Pkey, md5Chain, requestKey)
+
 	return signedRequest, nil
 }
 
+func LogAssign(length int, signed string, md5Pkey string, md5Chain string, requestKey string) {
+	seqLog, _ = goseq.GetLogger(config.Get().SEQUrl, config.Get().SEQAPIKey)
+	prop := goseq.NewProperties()
+	prop.AddProperty("Application", "BoletoOnline")
+	prop.AddProperty("length DetachedSignature", length)
+	prop.AddProperty("signedRequest", signed)
+	prop.AddProperty("MD5 PrivateKey", md5Pkey)
+	prop.AddProperty("MD5 ChainCA", md5Chain)
+	prop.AddProperty("Operation", "Assigned")
+	prop.AddProperty("RequestKey", requestKey)
+	head := "[BoletoOnline: RegisterBoleto] - Assinatura request BradescoNetEmpresa - length DetachedSignature: " +strconv.Itoa(length)
+	seqLog.Debug(head, prop)
+}
+
 //Read privatekey and parse to PKCS#1
-func parsePrivateKey() (crypto.PrivateKey, error) {
+func parsePrivateKey() (crypto.PrivateKey, string, error) {
+
+	var md5PrivateKey string
 
 	pkeyBytes, err := ioutil.ReadFile(config.Get().CertICP_PathPkey)
 	if err != nil {
-		return nil, err
+		return nil, "", err
+	}
+
+	if len(pkeyBytes) != 0{
+		md5PrivateKeyByte := md5.Sum(pkeyBytes)
+		md5PrivateKey = hex.EncodeToString(md5PrivateKeyByte[:])
+	} else{
+		md5PrivateKey = "Certificado não encontrado."
 	}
 
 	block, _ := pem.Decode(pkeyBytes)
 	if block == nil {
-		return nil, errors.New("Key Not Found")
+		return nil, md5PrivateKey, errors.New("Key Not Found")
 	}
 
 	switch block.Type {
 	case "RSA PRIVATE KEY":
 		rsa, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err != nil {
-			return nil, err
+			return nil, md5PrivateKey, err
 		}
-		return rsa, nil
+		return rsa, md5PrivateKey, nil
 	default:
-		return nil, fmt.Errorf("SSH: Unsupported key type %q", block.Type)
+		return nil, md5PrivateKey, fmt.Errorf("SSH: Unsupported key type %q", block.Type)
 	}
 
 }
 
 ///Read chainCertificates and adapter to x509.Certificate
-func parseChainCertificates() (*x509.Certificate, error) {
+func parseChainCertificates() (*x509.Certificate, string, error) {
+	var md5Chain string
 
 	chainCertsBytes, err := ioutil.ReadFile(config.Get().CertICP_PathChainCertificates)
 	if err != nil {
-		return nil, err
+		return nil, "", err
+	}
+
+	if len(chainCertsBytes) != 0{
+		md5ChainByte := md5.Sum(chainCertsBytes)
+		md5Chain = hex.EncodeToString(md5ChainByte[:])
+	} else{
+		md5Chain = "Certificado não encontrado."
 	}
 
 	block, _ := pem.Decode(chainCertsBytes)
 	if block == nil {
-		return nil, errors.New("Key Not Found")
+		return nil, md5Chain, errors.New("Key Not Found")
 	}
 
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return nil, err
+		return nil, md5Chain, err
 	}
 
-	return cert, nil
+	return cert, md5Chain, nil
 }
 
 func doRequestTLS(method, url, body, timeout string, header map[string]string, transport *http.Transport) (string, int, error) {
@@ -216,3 +253,8 @@ func HeaderToMap(h http.Header) map[string]string {
 	}
 	return m
 }
+
+var (
+	seqLog *goseq.Logger
+)
+

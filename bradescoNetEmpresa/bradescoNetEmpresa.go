@@ -68,7 +68,7 @@ func (b bankBradescoNetEmpresa) RegisterBoleto(boleto *models.BoletoRequest) (mo
 	bod := r.From("message://?source=inline", boleto, getRequestBradescoNetEmpresa(), tmpl.GetFuncMaps())
 	bod.To("logseq://?type=request&url="+serviceURL, b.log)
 
-	err := signRequest(bod)
+	err := signRequest(bod, boleto.RequestKey)
 	if err != nil {
 		return models.BoletoResponse{}, err
 	}
@@ -110,11 +110,12 @@ func (b bankBradescoNetEmpresa) RegisterBoleto(boleto *models.BoletoRequest) (mo
 	return models.BoletoResponse{}, models.NewInternalServerError("MP500", "Internal error")
 }
 
-func signRequest(bod *flow.Flow) error {
+func signRequest(bod *flow.Flow, requestKey string) error {
 
 	if !config.Get().MockMode {
 		bodyToSign := fmt.Sprintf("%v", bod.GetBody())
-		signedRequest, err := util.SignRequest(bodyToSign)
+
+		signedRequest, err := util.SignRequest(bodyToSign, requestKey)
 		if err != nil {
 			return err
 		}

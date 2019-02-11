@@ -1,7 +1,11 @@
 package util
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
+
+	"io/ioutil"
 	"os"
 	"strings"
 
@@ -55,10 +59,29 @@ func copyCert(certificateDestiny string) error {
 		return err
 	}
 
-	logCopy("Certificate Copy Sucessful: " + certificateDestiny)
+	logCopy("Certificate Copy Sucessful: " + certificateDestiny + " | " + chesumMd5(certificateDestiny))
 
 	return nil
 
+}
+
+func chesumMd5(path string) string {
+	cert, err := ioutil.ReadFile(path)
+
+	if len(cert) == 0{
+		return "Certificado não encontrado."
+	}
+
+	if err != nil{
+		fmt.Println(err.Error())
+	}
+
+	md5ChainByte := md5.Sum(cert)
+	md5Chain := hex.EncodeToString(md5ChainByte[:])
+
+	cert = nil
+
+	return md5Chain
 }
 
 func logCopy(msg string) {
