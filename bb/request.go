@@ -37,7 +37,10 @@ const registerBoleto = `
  <sch:dataEmissaoTitulo>{{replace (today | brdate) "/" "."}}</sch:dataEmissaoTitulo>
  <sch:dataVencimentoTitulo>{{replace (.Title.ExpireDateTime | brdate) "/" "."}}</sch:dataVencimentoTitulo>
  <sch:valorOriginalTitulo>{{toFloatStr .Title.AmountInCents}}</sch:valorOriginalTitulo>
- <sch:codigoTipoDesconto>0</sch:codigoTipoDesconto> 
+ <sch:codigoTipoDesconto>0</sch:codigoTipoDesconto>
+ <sch:codigoTipoJuroMora>2</sch:codigoTipoJuroMora>
+ <sch:percentualJuroMoraTitulo>{{toFloatStr .Title.JuroInCents}}</sch:percentualJuroMoraTitulo>  
+ <sch:valorJuroMoraTitulo>{{toFloatStr .Title.JuroInPercentage}}</sch:valorJuroMoraTitulo> 
  <sch:codigoTipoMulta>0</sch:codigoTipoMulta> 
  <sch:codigoAceiteTitulo>N</sch:codigoAceiteTitulo>
  <sch:codigoTipoTitulo>19</sch:codigoTipoTitulo>
