@@ -48,7 +48,7 @@ const registerBoletoCiti = `
          </GrpClPgd>
          <CdOccTp>01</CdOccTp>
          <DbtrGrntNm> </DbtrGrntNm>
-         <DbtrMsg>{{truncate .Title.Instructions 40}}</DbtrMsg>
+         <DbtrMsg>{{sanitizeCitibakSpecialCharacteres .Title.Instructions 40}}</DbtrMsg>
          <TitlAmt>{{.Title.AmountInCents}}</TitlAmt>
          <TitlBarCdInd>0</TitlBarCdInd>
          <TitlCcyCd>09</TitlCcyCd>
@@ -62,7 +62,7 @@ const registerBoletoCiti = `
          <TitlOurNb>{{padLeft (toString .Title.OurNumber) "0" 12}}</TitlOurNb>
          <TitlPortCd>1</TitlPortCd>
          <TitlRbtAmt>0</TitlRbtAmt>
-         <TitlTpCd>03</TitlTpCd>
+         <TitlTpCd>{{.Title.BoletoTypeCode}}</TitlTpCd>
          <TitlYourNb>{{trimLeft .Title.DocumentNumber "0"}}</TitlYourNb>
          <GrpDscnt>
             <TitlDscntAmtOrPrct>0</TitlDscntAmtOrPrct>

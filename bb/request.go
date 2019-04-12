@@ -43,7 +43,7 @@ const registerBoleto = `
  <sch:valorJuroMoraTitulo>{{toFloatStr .Title.JuroInPercentage}}</sch:valorJuroMoraTitulo> 
  <sch:codigoTipoMulta>0</sch:codigoTipoMulta> 
  <sch:codigoAceiteTitulo>N</sch:codigoAceiteTitulo>
- <sch:codigoTipoTitulo>19</sch:codigoTipoTitulo>
+ <sch:codigoTipoTitulo>{{.Title.BoletoTypeCode}}</sch:codigoTipoTitulo>
  <sch:textoDescricaoTipoTitulo></sch:textoDescricaoTipoTitulo>
  <sch:indicadorPermissaoRecebimentoParcial>N</sch:indicadorPermissaoRecebimentoParcial>
  <sch:textoNumeroTituloBeneficiario></sch:textoNumeroTituloBeneficiario>

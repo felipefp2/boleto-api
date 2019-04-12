@@ -95,6 +95,35 @@ func TestRegiterBoleto(t *testing.T) {
 	})
 }
 
+func TestShouldMapBradescoNetEmpresaBoletoType(t *testing.T) {
+	env.Config(true, true, true)
+	input := new(models.BoletoRequest)
+	if err := util.FromJSON(baseMockJSON, input); err != nil {
+		t.Fail()
+	}
+
+	go mock.Run("9097")
+	time.Sleep(2 * time.Second)
+
+	Convey("deve-se mapear corretamente o BoletoType quando informação for vazia", t, func() {
+		_, output := getBoletoType(input)
+		So(input.Title.BoletoType, ShouldEqual, "")
+		So(output, ShouldEqual, "01")
+	})
+
+	input.Title.BoletoType = "BDP"
+	Convey("deve-se mapear corretamente o BoletoType de boleto de proposta", t, func() {
+		_, output := getBoletoType(input)
+		So(output, ShouldEqual, "30")
+	})
+
+	input.Title.BoletoType = "Bradesco"
+	Convey("deve-se mapear corretamente o BoletoType quando valor enviado não existir", t, func() {
+		_, output := getBoletoType(input)
+		So(output, ShouldEqual, "01")
+	})
+}
+
 func TestBarcodeGenerationBradescoShopFacil(t *testing.T) {
 	//example := "23795796800000001990001250012446693212345670"
 	boleto := models.BoletoRequest{}
@@ -130,5 +159,37 @@ func TestRemoveDigitFromAccount(t *testing.T) {
 	}
 	Convey("deve-se montar identificar e remover o digito da conta", t, func() {
 		So(bc.toString(), ShouldEqual, "23791796800000001992372250012446693300056000")
+	})
+}
+
+func TestGetBoletoType(t *testing.T) {
+
+	input := new(models.BoletoRequest)
+	if err := util.FromJSON(baseMockJSON, input); err != nil {
+		t.Fail()
+	}
+
+	input.Title.BoletoType = ""
+	expectBoletoTypeCode := "01"
+
+	Convey("Quando não informado o BoletoType o retorno deve ser 01 - Duplicata Mercantil", t, func() {
+		_, output := getBoletoType(input)
+		So(output, ShouldEqual, expectBoletoTypeCode)
+	})
+
+	input.Title.BoletoType = "NSA"
+	expectBoletoTypeCode = "01"
+
+	Convey("Quando informado o BoletoType Inválido o retorno deve ser 01 - Duplicata Mercantil", t, func() {
+		_, output := getBoletoType(input)
+		So(output, ShouldEqual, expectBoletoTypeCode)
+	})
+
+	input.Title.BoletoType = "BDP"
+	expectBoletoTypeCode = "01"
+
+	Convey("Quando informado o BoletoType BDP o retorno deve ser 01 - Duplicata Mercantil", t, func() {
+		_, output := getBoletoType(input)
+		So(output, ShouldEqual, expectBoletoTypeCode)
 	})
 }

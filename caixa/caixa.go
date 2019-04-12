@@ -2,17 +2,23 @@ package caixa
 
 import (
 	"fmt"
+	"strings"
+	"sync"
+
+	"github.com/mundipagg/boleto-api/metrics"
 
 	"github.com/PMoneda/flow"
 
 	"github.com/mundipagg/boleto-api/config"
 	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/metrics"
 	"github.com/mundipagg/boleto-api/models"
 	"github.com/mundipagg/boleto-api/tmpl"
 	"github.com/mundipagg/boleto-api/util"
 	"github.com/mundipagg/boleto-api/validations"
 )
+
+var o = &sync.Once{}
+var m map[string]string
 
 type bankCaixa struct {
 	validate *models.Validator
@@ -30,6 +36,7 @@ func New() bankCaixa {
 	b.validate.Push(validations.ValidateRecipientDocumentNumber)
 	b.validate.Push(caixaValidateAgency)
 	b.validate.Push(validadeOurNumber)
+	b.validate.Push(caixaValidateBoletoType)
 	return b
 }
 
@@ -38,7 +45,9 @@ func (b bankCaixa) Log() *log.Log {
 	return b.log
 }
 func (b bankCaixa) RegisterBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
-	timing := metrics.GetTimingMetrics()
+
+	boleto.Title.BoletoType, boleto.Title.BoletoTypeCode = getBoletoType(boleto)
+
 	r := flow.NewFlow()
 	urlCaixa := config.Get().URLCaixaRegisterBoleto
 	from := getResponseCaixa()
@@ -49,7 +58,7 @@ func (b bankCaixa) RegisterBoleto(boleto *models.BoletoRequest) (models.BoletoRe
 	duration := util.Duration(func() {
 		bod = bod.To(urlCaixa, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutDefault})
 	})
-	timing.Push("caixa-register-time", duration.Seconds())
+	metrics.PushTimingMetric("caixa-register-time", duration.Seconds())
 	bod = bod.To("logseq://?type=response&url="+urlCaixa, b.log)
 	ch := bod.Choice()
 	ch = ch.When(flow.Header("status").IsEqualTo("200"))
@@ -117,4 +126,26 @@ func (b bankCaixa) GetBankNumber() models.BankNumber {
 
 func (b bankCaixa) GetBankNameIntegration() string {
 	return "Caixa"
+}
+
+func caixaBoletoTypes() map[string]string {
+	o.Do(func() {
+		m = make(map[string]string)
+
+		m["OUT"] = "99" //Duplicata Mercantil p/ Indicação
+	})
+	return m
+}
+
+func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
+	if len(boleto.Title.BoletoType) < 1 {
+		return "OUT", "99"
+	}
+	btm := caixaBoletoTypes()
+
+	if btm[strings.ToUpper(boleto.Title.BoletoType)] == "" {
+		return "OUT", "99"
+	}
+
+	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
 }

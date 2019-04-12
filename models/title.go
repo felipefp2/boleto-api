@@ -21,6 +21,8 @@ type Title struct {
 	JuroType         string    `json:"juroType,omitempty"`
 	JuroInCents      uint64    `json:"juroInCents,omitempty"`
 	JuroInPercentage float32   `json:"juroInPercentage,omitempty"`
+	BoletoType       string    `json:"boletoType,omitempty"`
+	BoletoTypeCode   string
 }
 
 //ValidateInstructionsLength valida se texto das instruções possui quantidade de caracteres corretos

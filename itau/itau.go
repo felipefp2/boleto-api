@@ -3,6 +3,7 @@ package itau
 import (
 	"errors"
 	"strings"
+	"sync"
 
 	. "github.com/PMoneda/flow"
 	"github.com/mundipagg/boleto-api/config"
@@ -13,6 +14,9 @@ import (
 	"github.com/mundipagg/boleto-api/util"
 	"github.com/mundipagg/boleto-api/validations"
 )
+
+var o = &sync.Once{}
+var m map[string]string
 
 type bankItau struct {
 	validate *models.Validator
@@ -30,6 +34,7 @@ func New() bankItau {
 	b.validate.Push(validations.ValidateRecipientDocumentNumber)
 	b.validate.Push(itauValidateAccount)
 	b.validate.Push(itauValidateAgency)
+	b.validate.Push(itauBoletoTypeValidate)
 	return b
 }
 
@@ -39,7 +44,6 @@ func (b bankItau) Log() *log.Log {
 }
 
 func (b bankItau) GetTicket(boleto *models.BoletoRequest) (string, error) {
-	timing := metrics.GetTimingMetrics()
 	pipe := NewFlow()
 	url := config.Get().URLTicketItau
 	pipe.From("message://?source=inline", boleto, getRequestTicket(), tmpl.GetFuncMaps())
@@ -47,7 +51,7 @@ func (b bankItau) GetTicket(boleto *models.BoletoRequest) (string, error) {
 	duration := util.Duration(func() {
 		pipe.To(url, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutToken})
 	})
-	timing.Push("itau-get-ticket-boleto-time", duration.Seconds())
+	metrics.PushTimingMetric("itau-get-ticket-boleto-time", duration.Seconds())
 	pipe.To("logseq://?type=response&url="+url, b.log)
 	ch := pipe.Choice()
 	ch.When(Header("status").IsEqualTo("200"))
@@ -72,18 +76,19 @@ func (b bankItau) GetTicket(boleto *models.BoletoRequest) (string, error) {
 }
 
 func (b bankItau) RegisterBoleto(input *models.BoletoRequest) (models.BoletoResponse, error) {
-	timing := metrics.GetTimingMetrics()
 	itauURL := config.Get().URLRegisterBoletoItau
 	fromResponse := getResponseItau()
 	fromResponseError := getResponseErrorItau()
 	toAPI := getAPIResponseItau()
 	inputTemplate := getRequestItau()
+
+	input.Title.BoletoType, input.Title.BoletoTypeCode = getBoletoType(input)
 	exec := NewFlow().From("message://?source=inline", input, inputTemplate, tmpl.GetFuncMaps())
 	exec.To("logseq://?type=request&url="+itauURL, b.log)
 	duration := util.Duration(func() {
 		exec.To(itauURL, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutRegister})
 	})
-	timing.Push("itau-register-boleto-time", duration.Seconds())
+	metrics.PushTimingMetric("itau-register-boleto-time", duration.Seconds())
 	exec.To("logseq://?type=response&url="+itauURL, b.log)
 
 	ch := exec.Choice()
@@ -139,4 +144,31 @@ func (b bankItau) GetBankNumber() models.BankNumber {
 
 func (b bankItau) GetBankNameIntegration() string {
 	return "Itau"
+}
+
+func itauBoletoTypes() map[string]string {
+	o.Do(func() {
+		m = make(map[string]string)
+
+		m["DM"] = "01"  //Duplicata Mercantil
+		m["NP"] = "02"  //Nota Promissória
+		m["RC"] = "05"  //Recibo
+		m["DS"] = "08"  //Duplicata de serviços
+		m["BDP"] = "18" //Boleto de proposta
+		m["OUT"] = "99" //Outros
+	})
+	return m
+}
+
+func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
+	if len(boleto.Title.BoletoType) < 1 {
+		return "DM", "01"
+	}
+	btm := itauBoletoTypes()
+
+	if btm[strings.ToUpper(boleto.Title.BoletoType)] == "" {
+		return "DM", "01"
+	}
+
+	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
 }

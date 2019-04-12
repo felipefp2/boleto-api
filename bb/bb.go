@@ -2,6 +2,8 @@ package bb
 
 import (
 	"errors"
+	"strings"
+	"sync"
 
 	"github.com/PMoneda/flow"
 	"github.com/mundipagg/boleto-api/config"
@@ -14,12 +16,15 @@ import (
 	"github.com/mundipagg/boleto-api/validations"
 )
 
+var o = &sync.Once{}
+var m map[string]string
+
 type bankBB struct {
 	validate *models.Validator
 	log      *log.Log
 }
 
-//Cria uma nova instância do objeto que implementa os serviços do Banco do Brasil e configura os validadores que serão utilizados
+//New Cria uma nova instância do objeto que implementa os serviços do Banco do Brasil e configura os validadores que serão utilizados
 func New() bankBB {
 	b := bankBB{
 		validate: models.NewValidator(),
@@ -35,6 +40,7 @@ func New() bankBB {
 	b.validate.Push(validations.ValidateRecipientDocumentNumber)
 	b.validate.Push(bbValidateTitleInstructions)
 	b.validate.Push(bbValidateTitleDocumentNumber)
+	b.validate.Push(bbValidateBoletoType)
 	return b
 }
 
@@ -48,7 +54,7 @@ func (b *bankBB) login(boleto *models.BoletoRequest) (string, error) {
 		Error            string `json:"error"`
 		ErrorDescription string `json:"error_description"`
 	}
-	timing := metrics.GetTimingMetrics()
+
 	r := flow.NewFlow()
 	url := config.Get().URLBBToken
 	from, resp := GetBBAuthLetters()
@@ -57,7 +63,7 @@ func (b *bankBB) login(boleto *models.BoletoRequest) (string, error) {
 	duration := util.Duration(func() {
 		bod = bod.To(url, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutToken})
 	})
-	timing.Push("bb-login-time", duration.Seconds())
+	metrics.PushTimingMetric("bb-login-time", duration.Seconds())
 	r = r.To("logseq://?type=response&url="+url, b.log)
 	ch := bod.Choice().When(flow.Header("status").IsEqualTo("200")).To("transform://?format=json", resp, `{{.authToken}}`)
 	ch = ch.Otherwise().To("unmarshall://?format=json", new(errorAuth))
@@ -91,13 +97,15 @@ func (b bankBB) RegisterBoleto(boleto *models.BoletoRequest) (models.BoletoRespo
 	r := flow.NewFlow()
 	url := config.Get().URLBBRegisterBoleto
 	from := getRequest()
-	timing := metrics.GetTimingMetrics()
+
+	boleto.Title.BoletoType, boleto.Title.BoletoTypeCode = getBoletoType(boleto)
+
 	r = r.From("message://?source=inline", boleto, from, tmpl.GetFuncMaps())
 	r.To("logseq://?type=request&url="+url, b.log)
 	duration := util.Duration(func() {
 		r.To(url, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutRegister})
 	})
-	timing.Push("bb-register-boleto-time", duration.Seconds())
+	metrics.PushTimingMetric("bb-register-boleto-time", duration.Seconds())
 	r.To("logseq://?type=response&url="+url, b.log)
 	ch := r.Choice()
 	ch.When(flow.Header("status").IsEqualTo("200"))
@@ -129,4 +137,33 @@ func (b bankBB) GetBankNumber() models.BankNumber {
 
 func (b bankBB) GetBankNameIntegration() string {
 	return "BancoDoBrasil"
+}
+
+func bbBoletoTypes() map[string]string {
+
+	o.Do(func() {
+		m = make(map[string]string)
+
+		m["CH"] = "01" //Cheque
+		m["DM"] = "02" //Duplicata Mercantil
+		m["DS"] = "04" //Duplicata de serviços
+		m["NP"] = "12" //Nota promissória
+		m["RC"] = "17" //Recibo
+		m["ND"] = "19" //Nota de Débito
+	})
+
+	return m
+}
+
+func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
+	if len(boleto.Title.BoletoType) < 1 {
+		return "ND", "19"
+	}
+	btm := bbBoletoTypes()
+
+	if btm[strings.ToUpper(boleto.Title.BoletoType)] == "" {
+		return "ND", "19"
+	}
+
+	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
 }

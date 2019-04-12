@@ -1,10 +1,14 @@
 package bradescoNetEmpresa
 
 import (
+	"sync"
 	"errors"
 	"fmt"
 	"html"
+	"strings"
 	"time"
+
+	"github.com/mundipagg/boleto-api/metrics"
 
 	"github.com/mundipagg/boleto-api/tmpl"
 	"github.com/mundipagg/boleto-api/util"
@@ -12,10 +16,12 @@ import (
 	"github.com/PMoneda/flow"
 	"github.com/mundipagg/boleto-api/config"
 	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/metrics"
 	"github.com/mundipagg/boleto-api/models"
 	"github.com/mundipagg/boleto-api/validations"
 )
+
+var o = &sync.Once{}
+var m map[string]string
 
 type bankBradescoNetEmpresa struct {
 	validate *models.Validator
@@ -49,6 +55,7 @@ func New() bankBradescoNetEmpresa {
 	b.validate.Push(bradescoNetEmpresaValidateAgency)
 	b.validate.Push(bradescoNetEmpresaValidateAccount)
 	b.validate.Push(bradescoNetEmpresaValidateWallet)
+	b.validate.Push(bradescoNetEmpresaBoletoTypeValidate)
 	return b
 }
 
@@ -57,7 +64,8 @@ func (b bankBradescoNetEmpresa) Log() *log.Log {
 }
 
 func (b bankBradescoNetEmpresa) RegisterBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
-	timing := metrics.GetTimingMetrics()
+
+	boleto.Title.BoletoType, boleto.Title.BoletoTypeCode = getBoletoType(boleto)
 	r := flow.NewFlow()
 	serviceURL := config.Get().URLBradescoNetEmpresa
 	xmlResponse := getResponseBradescoNetEmpresaXml()
@@ -77,7 +85,7 @@ func (b bankBradescoNetEmpresa) RegisterBoleto(boleto *models.BoletoRequest) (mo
 		bod.To(serviceURL, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutDefault})
 	})
 
-	timing.Push("bradesco-netempresa-register-boleto-online", duration.Seconds())
+	metrics.PushTimingMetric("bradesco-netempresa-register-boleto-online", duration.Seconds())
 	bod.To("logseq://?type=response&url="+serviceURL, b.log)
 
 	bod.To("transform://?format=xml", xmlResponse, jsonReponse)
@@ -110,20 +118,6 @@ func (b bankBradescoNetEmpresa) RegisterBoleto(boleto *models.BoletoRequest) (mo
 	return models.BoletoResponse{}, models.NewInternalServerError("MP500", "Internal error")
 }
 
-func signRequest(bod *flow.Flow) error {
-
-	if !config.Get().MockMode {
-		bodyToSign := fmt.Sprintf("%v", bod.GetBody())
-		signedRequest, err := util.SignRequest(bodyToSign)
-		if err != nil {
-			return err
-		}
-		bod.To("set://?prop=body", signedRequest)
-	}
-
-	return nil
-}
-
 func (b bankBradescoNetEmpresa) ProcessBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
 	errs := b.ValidateBoleto(boleto)
 	if len(errs) > 0 {
@@ -142,6 +136,20 @@ func (b bankBradescoNetEmpresa) GetBankNumber() models.BankNumber {
 
 func (b bankBradescoNetEmpresa) GetBankNameIntegration() string {
 	return "BradescoNetEmpresa"
+}
+
+func signRequest(bod *flow.Flow) error {
+
+	if !config.Get().MockMode {
+		bodyToSign := fmt.Sprintf("%v", bod.GetBody())
+		signedRequest, err := util.SignRequest(bodyToSign)
+		if err != nil {
+			return err
+		}
+		bod.To("set://?prop=body", signedRequest)
+	}
+
+	return nil
 }
 
 func getBarcode(boleto models.BoletoRequest) (bc barcode) {
@@ -174,4 +182,33 @@ func dateDueFactor(dateDue time.Time) (string, error) {
 		return "", errors.New("DateDue must be in the future")
 	}
 	return fmt.Sprintf("%04d", factor), nil
+}
+
+func bradescoNetEmpresaBoletoTypes() map[string]string {
+
+	o.Do(func() {
+		m = make(map[string]string)
+
+		m["CH"] = "01"  //Cheque
+		m["DM"] = "02"  //Duplicata Mercantil
+		m["DS"] = "04"  //Duplicata de serviços
+		m["NP"] = "12"  //Nota promissória
+		m["RC"] = "17"  //Recibo
+		m["OUT"] = "99" //Outros
+	})
+
+	return m
+}
+
+func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
+	if len(boleto.Title.BoletoType) < 1 {
+		return "DM", "02"
+	}
+	btm := bradescoNetEmpresaBoletoTypes()
+
+	if btm[strings.ToUpper(boleto.Title.BoletoType)] == "" {
+		return "DM", "02"
+	}
+
+	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
 }
