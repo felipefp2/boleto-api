@@ -40,27 +40,31 @@ const registerBoleto = `
  <sch:codigoTipoDesconto>0</sch:codigoTipoDesconto> 	 
 	 
  {{if .Title.JuroInCents }}  
- 	<sch:codigoTipoJuroMora>1</sch:codigoTipoJuroMora> 	
+ 	<sch:codigoTipoJuroMora>1</sch:codigoTipoJuroMora> 
+	<sch:percentualJuroMoraTitulo></sch:percentualJuroMoraTitulo>
 	<sch:valorJuroMoraTitulo>{{toFloatStr .Title.JuroInCents}}</sch:valorJuroMoraTitulo>	
  {{else if .Title.JuroInPercentual }}  
  	<sch:codigoTipoJuroMora>2</sch:codigoTipoJuroMora> 	
-	<sch:percentualJuroMoraTitulo>{{.Title.JuroInPercentual}}</sch:percentualJuroMoraTitulo>	
+	<sch:percentualJuroMoraTitulo>{{.Title.JuroInPercentual}}</sch:percentualJuroMoraTitulo>
+	<sch:valorJuroMoraTitulo></sch:valorJuroMoraTitulo>	
  {{else}}
 	 <sch:codigoTipoJuroMora>0</sch:codigoTipoJuroMora>
  {{end}} 
 
- {{if .Title.MultaInCents }} 
- 	<sch:codigoTipoMulta>2</sch:codigoTipoMulta>
+ {{if .Title.MultaInCents }}
+	<sch:codigoTipoMulta>1</sch:codigoTipoMulta>
+	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
+	<sch:percentualMultaTitulo></sch:percentualMultaTitulo>
 	<sch:valorMultaTitulo>{{toFloatStr .Title.MultaInCents}}</sch:valorMultaTitulo>
+ {{else if .Title.MultaInPercentual }}
+	<sch:codigoTipoMulta>2</sch:codigoTipoMulta>
 	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
- {{else if .Title.MultaInPercentual }} 
- 	<sch:codigoTipoMulta>1</sch:codigoTipoMulta>
 	<sch:percentualMultaTitulo>{{.Title.MultaInPercentual}}</sch:percentualMultaTitulo>
-	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
+	<sch:valorMultaTitulo></sch:valorMultaTitulo>
  {{else}}
-	 <sch:codigoTipoMulta>0</sch:codigoTipoMulta>
- {{end}}
-
+ 	<sch:codigoTipoMulta>0</sch:codigoTipoMulta>
+ {{end}} 
+ 
  <sch:codigoAceiteTitulo>N</sch:codigoAceiteTitulo>
  <sch:codigoTipoTitulo>{{.Title.BoletoTypeCode}}</sch:codigoTipoTitulo>
  <sch:textoDescricaoTipoTitulo></sch:textoDescricaoTipoTitulo>

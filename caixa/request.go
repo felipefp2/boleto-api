@@ -57,11 +57,37 @@ const incluiBoleto = `
                   <VALOR>{{toFloatStr .Title.AmountInCents}}</VALOR>
                   <TIPO_ESPECIE>{{.Title.BoletoTypeCode}}</TIPO_ESPECIE>
                   <FLAG_ACEITE>S</FLAG_ACEITE>
-                  <DATA_EMISSAO>{{enDate today "-"}}</DATA_EMISSAO>
-                  <JUROS_MORA>
-                     <TIPO>ISENTO</TIPO>
-                     <VALOR>0</VALOR>
-                  </JUROS_MORA>
+                  <DATA_EMISSAO>{{enDate today "-"}}</DATA_EMISSAO>                  
+
+                  {{if .Title.JuroInCents }}  
+                     <JUROS_MORA>
+                        <TIPO>VALOR_POR_DIA</TIPO>
+                        <VALOR>{{toFloatStr .Title.JuroInCents}}</VALOR>
+                     </JUROS_MORA>
+                  {{else if .Title.JuroInPercentual }}  
+                     <JUROS_MORA>
+                        <TIPO>TAXA_MENSAL</TIPO>
+                        <VALOR>{{.Title.JuroInPercentual}}</VALOR>
+                     </JUROS_MORA>	
+                  {{else}}
+                     <JUROS_MORA>
+                        <TIPO>ISENTO</TIPO>
+                        <VALOR>0</VALOR>
+                     </JUROS_MORA>
+                  {{end}} 
+
+                  {{if .Title.MultaInCents }} 
+                     <MULTA>
+                        <DATA>{{.Title.MultaDate}}</DATA>
+                        <VALOR>{{toFloatStr .Title.MultaInCents}}</VALOR>
+                     </MULTA>	
+                  {{else if .Title.MultaInPercentual }} 
+                     <MULTA>
+                        <DATA>{{.Title.MultaDate}}</DATA>
+                        <VALOR>{{.Title.MultaInPercentual}}</VALOR>
+                     </MULTA>	             
+                  {{end}}
+
                   <VALOR_ABATIMENTO>0</VALOR_ABATIMENTO>
                   <POS_VENCIMENTO>
                      <ACAO>DEVOLVER</ACAO>
