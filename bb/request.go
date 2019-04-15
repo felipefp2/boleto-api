@@ -37,11 +37,30 @@ const registerBoleto = `
  <sch:dataEmissaoTitulo>{{replace (today | brdate) "/" "."}}</sch:dataEmissaoTitulo>
  <sch:dataVencimentoTitulo>{{replace (.Title.ExpireDateTime | brdate) "/" "."}}</sch:dataVencimentoTitulo>
  <sch:valorOriginalTitulo>{{toFloatStr .Title.AmountInCents}}</sch:valorOriginalTitulo>
- <sch:codigoTipoDesconto>0</sch:codigoTipoDesconto>
- <sch:codigoTipoJuroMora>2</sch:codigoTipoJuroMora>
- <sch:percentualJuroMoraTitulo>{{toFloatStr .Title.JuroInCents}}</sch:percentualJuroMoraTitulo>  
- <sch:valorJuroMoraTitulo>{{toFloatStr .Title.JuroInPercentage}}</sch:valorJuroMoraTitulo> 
- <sch:codigoTipoMulta>0</sch:codigoTipoMulta> 
+ <sch:codigoTipoDesconto>0</sch:codigoTipoDesconto> 	 
+	 
+ {{if .Title.JuroInCents }}  
+ 	<sch:codigoTipoJuroMora>1</sch:codigoTipoJuroMora> 	
+	<sch:valorJuroMoraTitulo>{{toFloatStr .Title.JuroInCents}}</sch:valorJuroMoraTitulo>	
+ {{else if .Title.JuroInPercentual }}  
+ 	<sch:codigoTipoJuroMora>2</sch:codigoTipoJuroMora> 	
+	<sch:percentualJuroMoraTitulo>{{.Title.JuroInPercentual}}</sch:percentualJuroMoraTitulo>	
+ {{else}}
+	 <sch:codigoTipoJuroMora>0</sch:codigoTipoJuroMora>
+ {{end}} 
+
+ {{if .Title.MultaInCents }} 
+ 	<sch:codigoTipoMulta>2</sch:codigoTipoMulta>
+	<sch:valorMultaTitulo>{{toFloatStr .Title.MultaInCents}}</sch:valorMultaTitulo>
+	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
+ {{else if .Title.MultaInPercentual }} 
+ 	<sch:codigoTipoMulta>1</sch:codigoTipoMulta>
+	<sch:percentualMultaTitulo>{{.Title.MultaInPercentual}}</sch:percentualMultaTitulo>
+	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
+ {{else}}
+	 <sch:codigoTipoMulta>0</sch:codigoTipoMulta>
+ {{end}}
+
  <sch:codigoAceiteTitulo>N</sch:codigoAceiteTitulo>
  <sch:codigoTipoTitulo>{{.Title.BoletoTypeCode}}</sch:codigoTipoTitulo>
  <sch:textoDescricaoTipoTitulo></sch:textoDescricaoTipoTitulo>

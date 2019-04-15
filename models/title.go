@@ -10,19 +10,21 @@ import (
 
 // Title título de cobrança de entrada
 type Title struct {
-	CreateDate       time.Time `json:"createDate,omitempty"`
-	ExpireDateTime   time.Time `json:"expireDateTime,omitempty"`
-	ExpireDate       string    `json:"expireDate,omitempty"`
-	AmountInCents    uint64    `json:"amountInCents,omitempty"`
-	OurNumber        uint      `json:"ourNumber,omitempty"`
-	Instructions     string    `json:"instructions,omitempty"`
-	DocumentNumber   string    `json:"documentNumber,omitempty"`
-	NSU              string    `json:"nsu,omitempty"`
-	JuroType         string    `json:"juroType,omitempty"`
-	JuroInCents      uint64    `json:"juroInCents,omitempty"`
-	JuroInPercentage float32   `json:"juroInPercentage,omitempty"`
-	BoletoType       string    `json:"boletoType,omitempty"`
-	BoletoTypeCode   string
+	CreateDate        time.Time `json:"createDate,omitempty"`
+	ExpireDateTime    time.Time `json:"expireDateTime,omitempty"`
+	ExpireDate        string    `json:"expireDate,omitempty"`
+	AmountInCents     uint64    `json:"amountInCents,omitempty"`
+	OurNumber         uint      `json:"ourNumber,omitempty"`
+	Instructions      string    `json:"instructions,omitempty"`
+	DocumentNumber    string    `json:"documentNumber,omitempty"`
+	NSU               string    `json:"nsu,omitempty"`
+	JuroInCents       uint64    `json:"juroInCents,omitempty"`
+	JuroInPercentual  string    `json:"juroInPercentual,omitempty"`
+	MultaDate         string    `json:"multaDate,omitempty"`
+	MultaInCents      uint64    `json:"multaInCents,omitempty"`
+	MultaInPercentual string    `json:"multaInPercentual,omitempty"`
+	BoletoType        string    `json:"boletoType,omitempty"`
+	BoletoTypeCode    string
 }
 
 //ValidateInstructionsLength valida se texto das instruções possui quantidade de caracteres corretos
