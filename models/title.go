@@ -18,6 +18,7 @@ type Title struct {
 	Instructions      string    `json:"instructions,omitempty"`
 	DocumentNumber    string    `json:"documentNumber,omitempty"`
 	NSU               string    `json:"nsu,omitempty"`
+	JuroDate          string    `json:"juroDate,omitempty"`
 	JuroInCents       uint64    `json:"juroInCents,omitempty"`
 	JuroInPercentual  string    `json:"juroInPercentual,omitempty"`
 	MultaDate         string    `json:"multaDate,omitempty"`

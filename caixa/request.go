@@ -60,33 +60,27 @@ const incluiBoleto = `
                   <DATA_EMISSAO>{{enDate today "-"}}</DATA_EMISSAO>                  
 
                   {{if .Title.JuroInCents }}  
-                     <JUROS_MORA>
+                     <JUROS_MORA>                        
                         <TIPO>VALOR_POR_DIA</TIPO>
+                        {{if .Title.JuroDate }}
+                        <DATA>{{.Title.JuroDate}}</DATA>
+                        {{end}}
                         <VALOR>{{toFloatStr .Title.JuroInCents}}</VALOR>
                      </JUROS_MORA>
                   {{else if .Title.JuroInPercentual }}  
-                     <JUROS_MORA>
+                     <JUROS_MORA>                        
                         <TIPO>TAXA_MENSAL</TIPO>
-                        <VALOR>{{.Title.JuroInPercentual}}</VALOR>
+                        {{if .Title.JuroDate }}
+                        <DATA>{{.Title.JuroDate}}</DATA>
+                        {{end}}
+                        <PERCENTUAL>{{.Title.JuroInPercentual}}</PERCENTUAL>
                      </JUROS_MORA>	
                   {{else}}
                      <JUROS_MORA>
                         <TIPO>ISENTO</TIPO>
                         <VALOR>0</VALOR>
                      </JUROS_MORA>
-                  {{end}} 
-
-                  {{if .Title.MultaInCents }} 
-                     <MULTA>
-                        <DATA>{{.Title.MultaDate}}</DATA>
-                        <VALOR>{{toFloatStr .Title.MultaInCents}}</VALOR>
-                     </MULTA>	
-                  {{else if .Title.MultaInPercentual }} 
-                     <MULTA>
-                        <DATA>{{.Title.MultaDate}}</DATA>
-                        <VALOR>{{.Title.MultaInPercentual}}</VALOR>
-                     </MULTA>	             
-                  {{end}}
+                  {{end}}                  
 
                   <VALOR_ABATIMENTO>0</VALOR_ABATIMENTO>
                   <POS_VENCIMENTO>
@@ -110,6 +104,19 @@ const incluiBoleto = `
                         <CEP>{{clearString (truncate .Buyer.Address.ZipCode 8)}}</CEP>
                      </ENDERECO>
                   </PAGADOR>
+
+                  {{if .Title.MultaInCents }} 
+                     <MULTA>
+                        <DATA>{{.Title.MultaDate}}</DATA>
+                        <VALOR>{{toFloatStr .Title.MultaInCents}}</VALOR>
+                     </MULTA>	
+                  {{else if .Title.MultaInPercentual }} 
+                     <MULTA>
+                        <DATA>{{.Title.MultaDate}}</DATA>
+                        <PERCENTUAL>{{.Title.MultaInPercentual}}</PERCENTUAL>
+                     </MULTA>	             
+                  {{end}}
+
                   <FICHA_COMPENSACAO>
                      <MENSAGENS>
                         <MENSAGEM>{{clearString (truncate .Title.Instructions 40)}}</MENSAGEM>
