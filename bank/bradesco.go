@@ -3,9 +3,9 @@ package bank
 import (
 	"fmt"
 
-	"github.com/mundipagg/boleto-api/bradescoNetEmpresa"
-	"github.com/mundipagg/boleto-api/bradescoShopFacil"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/bradescoNetEmpresa"
+	"github.com/felipefp2/boleto-api/bradescoShopFacil"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 //Get retorna estrategia de acordo com a carteira ou erro caso o banco não exista

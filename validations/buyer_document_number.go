@@ -1,6 +1,6 @@
 package validations
 
-import "github.com/mundipagg/boleto-api/models"
+import "github.com/felipefp2/boleto-api/models"
 
 //ValidateBuyerDocumentNumber verifica se o número do documento do pagador é válido
 func ValidateBuyerDocumentNumber(b interface{}) error {

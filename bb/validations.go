@@ -1,8 +1,8 @@
 package bb
 
 import (
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/validations"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/validations"
 )
 
 var bb bankBB

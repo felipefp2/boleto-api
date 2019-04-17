@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/models"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

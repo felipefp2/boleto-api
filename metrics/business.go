@@ -3,7 +3,7 @@ package metrics
 import (
 	. "github.com/PMoneda/telemetry"
 	"github.com/PMoneda/telemetry/registry"
-	"github.com/mundipagg/boleto-api/config"
+	"github.com/felipefp2/boleto-api/config"
 )
 
 var business *Telemetry

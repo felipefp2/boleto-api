@@ -1,6 +1,6 @@
 package validations
 
-import "github.com/mundipagg/boleto-api/models"
+import "github.com/felipefp2/boleto-api/models"
 
 //ValidateAmount valida o valor do titulo
 func ValidateAmount(b interface{}) error {

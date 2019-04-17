@@ -4,10 +4,10 @@ import (
 	"strconv"
 
 	"github.com/jasonlvhit/gocron"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/db"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/db"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/util"
 )
 
 //RecoveryRobot robô que faz a resiliência de boletos

@@ -4,10 +4,10 @@ import (
 	"os"
 
 	"github.com/PMoneda/flow"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/metrics"
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/metrics"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/util"
 )
 
 func Config(devMode, mockMode, disableLog bool) {

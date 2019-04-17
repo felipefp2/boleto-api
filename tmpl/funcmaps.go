@@ -15,9 +15,9 @@ import (
 	"fmt"
 
 	"github.com/kennygrant/sanitize"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/util"
 )
 
 var funcMap = template.FuncMap{

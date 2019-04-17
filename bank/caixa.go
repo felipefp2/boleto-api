@@ -1,8 +1,8 @@
 package bank
 
 import (
-	"github.com/mundipagg/boleto-api/caixa"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/caixa"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 func getIntegrationCaixa(boleto models.BoletoRequest) (Bank, error) {

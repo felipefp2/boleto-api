@@ -3,8 +3,8 @@ package db
 import (
 	"errors"
 
-	"github.com/mundipagg/boleto-api/cache"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/cache"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 

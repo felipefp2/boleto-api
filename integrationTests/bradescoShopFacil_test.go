@@ -5,10 +5,10 @@ import (
 
 	"strings"
 
-	"github.com/mundipagg/boleto-api/app"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/app"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/util"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

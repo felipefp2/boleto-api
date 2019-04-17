@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/mundipagg/boleto-api/app"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
+	"github.com/felipefp2/boleto-api/app"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
 )
 
 var (

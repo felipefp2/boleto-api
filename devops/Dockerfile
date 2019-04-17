@@ -1,6 +1,6 @@
 # build stage
 FROM golang:alpine AS build-env
-WORKDIR /go/src/github.com/mundipagg/boleto-api
+WORKDIR /go/src/github.com/felipefp2/boleto-api
 COPY . .
 RUN mkdir -p "deploy"
 

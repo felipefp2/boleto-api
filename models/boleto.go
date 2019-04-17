@@ -3,11 +3,11 @@ package models
 import (
 	"time"
 
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/util"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/mundipagg/boleto-api/config"
+	"github.com/felipefp2/boleto-api/config"
 
 	"github.com/PMoneda/flow"
 	"github.com/google/uuid"

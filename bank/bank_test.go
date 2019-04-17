@@ -3,7 +3,7 @@ package bank
 import (
 	"testing"
 
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

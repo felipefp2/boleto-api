@@ -3,7 +3,7 @@ package boleto
 import (
 	"html/template"
 
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 //ConfigBank configure html template for each bank

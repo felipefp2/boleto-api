@@ -3,8 +3,8 @@ package util
 import (
 	"fmt"
 
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
 
 	"errors"
 	"net/http"

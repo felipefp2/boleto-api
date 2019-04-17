@@ -8,9 +8,9 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 //Redis Classe de Conexão com o Banco REDIS

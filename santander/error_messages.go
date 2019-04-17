@@ -1,7 +1,7 @@
 package santander
 
 import (
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 /*

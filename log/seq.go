@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mundipagg/boleto-api/config"
+	"github.com/felipefp2/boleto-api/config"
 	"github.com/mundipagg/goseq"
 )
 

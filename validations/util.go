@@ -3,7 +3,7 @@ package validations
 import (
 	"strconv"
 
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 func SumAccountDigits(a string, m []int) int {

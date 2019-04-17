@@ -1,8 +1,8 @@
 package bank
 
 import (
-	"github.com/mundipagg/boleto-api/bb"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/bb"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 func getIntegrationBB(boleto models.BoletoRequest) (Bank, error) {

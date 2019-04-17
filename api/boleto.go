@@ -15,12 +15,12 @@ import (
 
 	"io/ioutil"
 
-	"github.com/mundipagg/boleto-api/bank"
-	"github.com/mundipagg/boleto-api/boleto"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/db"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/bank"
+	"github.com/felipefp2/boleto-api/boleto"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/db"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 //Regista um boleto em um determinado banco

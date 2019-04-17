@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/util"
 )
 
 // Title título de cobrança de entrada
@@ -22,6 +22,7 @@ type Title struct {
 	JuroInCents       uint64    `json:"juroInCents,omitempty"`
 	JuroInPercentual  string    `json:"juroInPercentual,omitempty"`
 	MultaDate         string    `json:"multaDate,omitempty"`
+	MultaDateTime     time.Time `json:"MultaDateTime,omitempty"`
 	MultaInCents      uint64    `json:"multaInCents,omitempty"`
 	MultaInPercentual string    `json:"multaInPercentual,omitempty"`
 	BoletoType        string    `json:"boletoType,omitempty"`
@@ -61,6 +62,19 @@ func (t *Title) IsExpireDateValid() error {
 	t.ExpireDateTime = d
 	if t.CreateDate.After(t.ExpireDateTime) {
 		return NewErrorResponse("MPExpireDate", "Data de expiração não pode ser menor que a data de hoje")
+	}
+	return nil
+}
+
+//IsMultaDateValid retorna um erro se a data de multa for inválida
+func (t *Title) IsMultaDateValid() error {
+	d, err := parseDate(t.MultaDate)
+	if err != nil {
+		return NewErrorResponse("MPMultaDate", fmt.Sprintf("Data em um formato inválido, esperamos AAAA-MM-DD e recebemos %s", t.ExpireDate))
+	}
+	t.MultaDateTime = d
+	if t.ExpireDateTime == t.MultaDateTime || t.ExpireDateTime.After(t.MultaDateTime) {
+		return NewErrorResponse("MPMultaDate", "Data de multa não pode ser menor/igual que a data de vencimento")
 	}
 	return nil
 }

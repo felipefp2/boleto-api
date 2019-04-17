@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mundipagg/boleto-api/bank"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/metrics"
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/bank"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/metrics"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/util"
 )
 
 // ReturnHeaders 'seta' os headers padrões de resposta

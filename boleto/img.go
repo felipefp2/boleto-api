@@ -9,7 +9,7 @@ import (
 	
 	s "strings"
 	"github.com/golang/freetype"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/util"
 	"golang.org/x/image/font"
 )
 

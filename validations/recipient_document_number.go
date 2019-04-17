@@ -1,6 +1,6 @@
 package validations
 
-import "github.com/mundipagg/boleto-api/models"
+import "github.com/felipefp2/boleto-api/models"
 
 //ValidateRecipientDocumentNumber Verifica se o número do documento do recebedor é válido
 func ValidateRecipientDocumentNumber(b interface{}) error {

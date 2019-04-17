@@ -53,12 +53,12 @@ const registerBoleto = `
 
  {{if .Title.MultaInCents }}
 	<sch:codigoTipoMulta>1</sch:codigoTipoMulta>
-	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
+	<sch:dataMultaTitulo>{{replace (.Title.MultaDateTime | brdate) "/" "."}}</sch:dataMultaTitulo>	
 	<sch:percentualMultaTitulo></sch:percentualMultaTitulo>
 	<sch:valorMultaTitulo>{{toFloatStr .Title.MultaInCents}}</sch:valorMultaTitulo>
  {{else if .Title.MultaInPercentual }}
 	<sch:codigoTipoMulta>2</sch:codigoTipoMulta>
-	<sch:dataMultaTitulo>{{.Title.MultaDate}}</sch:dataMultaTitulo>	
+	<sch:dataMultaTitulo>{{replace (.Title.MultaDateTime | brdate) "/" "."}}</sch:dataMultaTitulo>	
 	<sch:percentualMultaTitulo>{{.Title.MultaInPercentual}}</sch:percentualMultaTitulo>
 	<sch:valorMultaTitulo></sch:valorMultaTitulo>
  {{else}}

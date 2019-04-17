@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/mundipagg/boleto-api/metrics"
+	"github.com/felipefp2/boleto-api/metrics"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/models"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/models"
 )
 
 //InstallRestAPI "instala" e sobe o servico de rest

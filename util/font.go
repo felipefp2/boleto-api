@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 
 	"github.com/golang/freetype/truetype"
-	"github.com/mundipagg/boleto-api/log"
+	"github.com/felipefp2/boleto-api/log"
 
 	"github.com/golang/freetype"
 )

@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mundipagg/boleto-api/env"
-	"github.com/mundipagg/boleto-api/mock"
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/test"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/env"
+	"github.com/felipefp2/boleto-api/mock"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/test"
+	"github.com/felipefp2/boleto-api/util"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

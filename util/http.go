@@ -15,7 +15,7 @@ import (
 	"time"
 
 	s "github.com/fullsailor/pkcs7"
-	"github.com/mundipagg/boleto-api/config"
+	"github.com/felipefp2/boleto-api/config"
 )
 
 var defaultDialer = &net.Dialer{Timeout: 16 * time.Second, KeepAlive: 16 * time.Second}

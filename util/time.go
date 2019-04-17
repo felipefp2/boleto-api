@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mundipagg/boleto-api/log"
+	"github.com/felipefp2/boleto-api/log"
 )
 
 func Duration(callback func()) (duration time.Duration) {

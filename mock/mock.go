@@ -1,7 +1,7 @@
 package mock
 
 import "github.com/gin-gonic/gin"
-import "github.com/mundipagg/boleto-api/env"
+import "github.com/felipefp2/boleto-api/env"
 
 //Run sobe uma aplicação web para mockar a integração com os Bancos
 func Run(port string) {

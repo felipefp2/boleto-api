@@ -6,14 +6,14 @@ import (
 	"sync"
 
 	"github.com/PMoneda/flow"
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
-	"github.com/mundipagg/boleto-api/metrics"
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/tmpl"
-	"github.com/mundipagg/boleto-api/util"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
+	"github.com/felipefp2/boleto-api/metrics"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/tmpl"
+	"github.com/felipefp2/boleto-api/util"
 
-	"github.com/mundipagg/boleto-api/validations"
+	"github.com/felipefp2/boleto-api/validations"
 )
 
 var o = &sync.Once{}
@@ -36,6 +36,7 @@ func New() bankBB {
 	b.validate.Push(bbValidateWalletVariation)
 	b.validate.Push(validations.ValidateAmount)
 	b.validate.Push(validations.ValidateExpireDate)
+	b.validate.Push(validations.ValidateMultaDate)
 	b.validate.Push(validations.ValidateBuyerDocumentNumber)
 	b.validate.Push(validations.ValidateRecipientDocumentNumber)
 	b.validate.Push(bbValidateTitleInstructions)

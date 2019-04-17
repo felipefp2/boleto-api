@@ -1,8 +1,8 @@
 package bank
 
 import (
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/santander"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/santander"
 )
 
 func getIntegrationSantander(boleto models.BoletoRequest) (Bank, error) {

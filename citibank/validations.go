@@ -3,8 +3,8 @@ package citibank
 import (
 	"fmt"
 
-	"github.com/mundipagg/boleto-api/models"
-	"github.com/mundipagg/boleto-api/validations"
+	"github.com/felipefp2/boleto-api/models"
+	"github.com/felipefp2/boleto-api/validations"
 )
 
 func citiValidateAgency(b interface{}) error {

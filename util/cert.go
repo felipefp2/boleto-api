@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mundipagg/boleto-api/config"
-	"github.com/mundipagg/boleto-api/log"
+	"github.com/felipefp2/boleto-api/config"
+	"github.com/felipefp2/boleto-api/log"
 
 	dc "github.com/hugocarreira/go-decent-copy"
 )
