@@ -63,7 +63,7 @@ const incluiBoleto = `
                      <JUROS_MORA>                        
                         <TIPO>VALOR_POR_DIA</TIPO>
                         {{if .Title.JuroDate }}
-                        <DATA>{{.Title.JuroDate}}</DATA>
+                           <DATA>{{enDate .Title.JuroDateTime "-"}}</DATA>
                         {{end}}
                         <VALOR>{{toFloatStr .Title.JuroInCents}}</VALOR>
                      </JUROS_MORA>
@@ -71,7 +71,7 @@ const incluiBoleto = `
                      <JUROS_MORA>                        
                         <TIPO>TAXA_MENSAL</TIPO>
                         {{if .Title.JuroDate }}
-                        <DATA>{{.Title.JuroDate}}</DATA>
+                           <DATA>{{enDate .Title.JuroDateTime "-"}}</DATA>
                         {{end}}
                         <PERCENTUAL>{{.Title.JuroInPercentual}}</PERCENTUAL>
                      </JUROS_MORA>	
@@ -106,13 +106,13 @@ const incluiBoleto = `
                   </PAGADOR>
 
                   {{if .Title.MultaInCents }} 
-                     <MULTA>
-                        <DATA>{{.Title.MultaDate}}</DATA>
+                     <MULTA>                    
+                        <DATA>{{enDate .Title.MultaDateTime "-"}}</DATA>
                         <VALOR>{{toFloatStr .Title.MultaInCents}}</VALOR>
                      </MULTA>	
                   {{else if .Title.MultaInPercentual }} 
                      <MULTA>
-                        <DATA>{{.Title.MultaDate}}</DATA>
+                        <DATA>{{enDate .Title.MultaDateTime "-"}}</DATA>
                         <PERCENTUAL>{{.Title.MultaInPercentual}}</PERCENTUAL>
                      </MULTA>	             
                   {{end}}

@@ -19,6 +19,7 @@ type Title struct {
 	DocumentNumber    string    `json:"documentNumber,omitempty"`
 	NSU               string    `json:"nsu,omitempty"`
 	JuroDate          string    `json:"juroDate,omitempty"`
+	JuroDateTime      time.Time `json:"JuroDateTime,omitempty"`
 	JuroInCents       uint64    `json:"juroInCents,omitempty"`
 	JuroInPercentual  string    `json:"juroInPercentual,omitempty"`
 	MultaDate         string    `json:"multaDate,omitempty"`
@@ -68,6 +69,9 @@ func (t *Title) IsExpireDateValid() error {
 
 //IsMultaDateValid retorna um erro se a data de multa for inválida
 func (t *Title) IsMultaDateValid() error {
+	if t.MultaDate == "" {
+		return nil
+	}
 	d, err := parseDate(t.MultaDate)
 	if err != nil {
 		return NewErrorResponse("MPMultaDate", fmt.Sprintf("Data em um formato inválido, esperamos AAAA-MM-DD e recebemos %s", t.ExpireDate))
@@ -75,6 +79,22 @@ func (t *Title) IsMultaDateValid() error {
 	t.MultaDateTime = d
 	if t.ExpireDateTime == t.MultaDateTime || t.ExpireDateTime.After(t.MultaDateTime) {
 		return NewErrorResponse("MPMultaDate", "Data de multa não pode ser menor/igual que a data de vencimento")
+	}
+	return nil
+}
+
+//IsJuroDateValid retorna um erro se a data de juro for inválida
+func (t *Title) IsJuroDateValid() error {
+	if t.JuroDate == "" {
+		return nil
+	}
+	d, err := parseDate(t.JuroDate)
+	if err != nil {
+		return NewErrorResponse("MPJuroDate", fmt.Sprintf("Data em um formato inválido, esperamos AAAA-MM-DD e recebemos %s", t.ExpireDate))
+	}
+	t.JuroDateTime = d
+	if t.ExpireDateTime == t.JuroDateTime || t.ExpireDateTime.After(t.JuroDateTime) {
+		return NewErrorResponse("MPJuroDate", "Data de juro não pode ser menor/igual que a data de vencimento")
 	}
 	return nil
 }
