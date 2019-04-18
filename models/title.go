@@ -21,11 +21,11 @@ type Title struct {
 	JuroDate          string    `json:"juroDate,omitempty"`
 	JuroDateTime      time.Time `json:"JuroDateTime,omitempty"`
 	JuroInCents       uint64    `json:"juroInCents,omitempty"`
-	JuroInPercentual  string    `json:"juroInPercentual,omitempty"`
+	JuroInPercentual  float64   `json:"juroInPercentual,omitempty"`
 	MultaDate         string    `json:"multaDate,omitempty"`
 	MultaDateTime     time.Time `json:"MultaDateTime,omitempty"`
 	MultaInCents      uint64    `json:"multaInCents,omitempty"`
-	MultaInPercentual string    `json:"multaInPercentual,omitempty"`
+	MultaInPercentual float64   `json:"multaInPercentual,omitempty"`
 	BoletoType        string    `json:"boletoType,omitempty"`
 	BoletoTypeCode    string
 }

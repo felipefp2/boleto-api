@@ -45,7 +45,7 @@ const registerBoleto = `
 	<sch:valorJuroMoraTitulo>{{toFloatStr .Title.JuroInCents}}</sch:valorJuroMoraTitulo>	
  {{else if .Title.JuroInPercentual }}  
  	<sch:codigoTipoJuroMora>2</sch:codigoTipoJuroMora> 	
-	<sch:percentualJuroMoraTitulo>{{.Title.JuroInPercentual}}</sch:percentualJuroMoraTitulo>
+	<sch:percentualJuroMoraTitulo>{{printf "%.2f" .Title.JuroInPercentual}}</sch:percentualJuroMoraTitulo>
 	<sch:valorJuroMoraTitulo></sch:valorJuroMoraTitulo>	
  {{else}}
 	 <sch:codigoTipoJuroMora>0</sch:codigoTipoJuroMora>
@@ -59,7 +59,7 @@ const registerBoleto = `
  {{else if .Title.MultaInPercentual }}
 	<sch:codigoTipoMulta>2</sch:codigoTipoMulta>
 	<sch:dataMultaTitulo>{{replace (.Title.MultaDateTime | brdate) "/" "."}}</sch:dataMultaTitulo>	
-	<sch:percentualMultaTitulo>{{.Title.MultaInPercentual}}</sch:percentualMultaTitulo>
+	<sch:percentualMultaTitulo>{{printf "%.2f" .Title.MultaInPercentual}}</sch:percentualMultaTitulo>
 	<sch:valorMultaTitulo></sch:valorMultaTitulo>
  {{else}}
  	<sch:codigoTipoMulta>0</sch:codigoTipoMulta>

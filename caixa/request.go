@@ -73,7 +73,7 @@ const incluiBoleto = `
                         {{if .Title.JuroDate }}
                            <DATA>{{enDate .Title.JuroDateTime "-"}}</DATA>
                         {{end}}
-                        <PERCENTUAL>{{.Title.JuroInPercentual}}</PERCENTUAL>
+                        <PERCENTUAL>{{printf "%.2f" .Title.JuroInPercentual}}</PERCENTUAL>
                      </JUROS_MORA>	
                   {{else}}
                      <JUROS_MORA>
@@ -113,7 +113,7 @@ const incluiBoleto = `
                   {{else if .Title.MultaInPercentual }} 
                      <MULTA>
                         <DATA>{{enDate .Title.MultaDateTime "-"}}</DATA>
-                        <PERCENTUAL>{{.Title.MultaInPercentual}}</PERCENTUAL>
+                        <PERCENTUAL>{{printf "%.2f" .Title.MultaInPercentual}}</PERCENTUAL>
                      </MULTA>	             
                   {{end}}
 
