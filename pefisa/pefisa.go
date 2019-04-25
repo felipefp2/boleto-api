@@ -194,3 +194,11 @@ func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
 
 	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
 }
+
+func (b bankPefisa) ProcessBoletoForEdit(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}
+
+func (b bankPefisa) EditBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}

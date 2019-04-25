@@ -168,3 +168,11 @@ func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
 
 	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
 }
+
+func (b bankBB) ProcessBoletoForEdit(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}
+
+func (b bankBB) EditBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}

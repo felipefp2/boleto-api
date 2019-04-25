@@ -1,11 +1,11 @@
 package bradescoNetEmpresa
 
 import (
-	"sync"
 	"errors"
 	"fmt"
 	"html"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/felipefp2/boleto-api/metrics"
@@ -211,4 +211,12 @@ func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
 	}
 
 	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
+}
+
+func (b bankBradescoNetEmpresa) ProcessBoletoForEdit(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}
+
+func (b bankBradescoNetEmpresa) EditBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
 }

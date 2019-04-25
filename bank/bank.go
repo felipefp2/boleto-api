@@ -15,7 +15,22 @@ type Bank interface {
 	GetBankNumber() models.BankNumber
 	GetBankNameIntegration() string
 	Log() *log.Log
+	ProcessBoletoForEdit(*models.BoletoRequest) (models.BoletoResponse, error)
+	EditBoleto(*models.BoletoRequest) (models.BoletoResponse, error)
 }
+
+// //EditOption é a interface que vai oferecer os serviços de alteração dos boletos
+// type EditOption interface {
+// 	ProcessBoletoForEdit(*models.BoletoRequest) (models.BoletoResponse, error)
+// 	EditBoleto(*models.BoletoRequest) (models.BoletoResponse, error)
+// }
+
+// //ProcessBoletoForEdit processo o boleto para alteração de dados
+// func ProcessBoletoForEdit(bank Bank) {
+// 	if bankWithEdit, ok := bank.(EditOption); ok {
+// 		bankWithEdit.ProcessBoletoForEdit()
+// 	}
+// }
 
 //Get retorna estrategia de acordo com o banco ou erro caso o banco não exista
 func Get(boleto models.BoletoRequest) (Bank, error) {

@@ -96,6 +96,50 @@ func (e *MongoDb) GetBoletoByID(id, pk string) (models.BoletoView, error) {
 	return result, nil
 }
 
+//UpdateBoleto altera um boleto pelo ID
+func (e *MongoDb) UpdateBoleto(id string, boleto models.BoletoView) error {
+
+	e.m.Lock()
+	defer e.m.Unlock()
+
+	session := dbSession.Copy()
+
+	defer session.Close()
+
+	c := session.DB(dbName).C("boletos")
+
+	selector := bson.M{"id": id}
+
+	if len(id) == 24 {
+		d := bson.ObjectIdHex(id)
+		selector = bson.M{"_id": d}
+	}
+
+	updator := bson.M{
+		"$set": bson.M{
+			"boleto.Title.ExpireDate":        boleto.Boleto.Title.ExpireDate,
+			"boleto.Title.ExpireDateTime":    boleto.Boleto.Title.ExpireDateTime,
+			"boleto.Title.JuroDate":          boleto.Boleto.Title.JuroDate,
+			"boleto.Title.JuroDateTime":      boleto.Boleto.Title.JuroDateTime,
+			"boleto.Title.JuroInCents":       boleto.Boleto.Title.JuroInCents,
+			"boleto.Title.JuroInPercentual":  boleto.Boleto.Title.JuroInPercentual,
+			"boleto.Title.MultaDate":         boleto.Boleto.Title.MultaDate,
+			"boleto.Title.MultaDateTime":     boleto.Boleto.Title.MultaDateTime,
+			"boleto.Title.MultaInCents":      boleto.Boleto.Title.MultaInCents,
+			"boleto.Title.MultaInPercentual": boleto.Boleto.Title.MultaInPercentual,
+			"boleto.Title.AmountInCents":     boleto.Boleto.Title.AmountInCents,
+		},
+	}
+
+	err = c.Update(selector, updator)
+
+	if err != nil {
+		return models.NewHTTPNotFound("MP404", "Not Found")
+	}
+
+	return nil
+}
+
 //Close Fecha a conexão
 func (e *MongoDb) Close() {
 	fmt.Println("Close Database Connection")

@@ -135,10 +135,83 @@ const incluiBoleto = `
 </soapenv:Envelope>
 `
 
+const alteraBoleto = `
+
+## SOAPAction:AlteraBoleto
+## Content-Type:text/xml
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ext="http://caixa.gov.br/sibar/manutencao_cobranca_bancaria/boleto/externo" xmlns:sib="http://caixa.gov.br/sibar">
+<soapenv:Body>
+<ext:SERVICO_ENTRADA >
+         <sib:HEADER>
+            <VERSAO>1.0</VERSAO>
+            <AUTENTICACAO>{{unscape .Authentication.AuthorizationToken}}</AUTENTICACAO>
+            <USUARIO_SERVICO>{{caixaEnv}}</USUARIO_SERVICO>
+            <OPERACAO>ALTERA_BOLETO</OPERACAO>
+            <SISTEMA_ORIGEM>SIGCB</SISTEMA_ORIGEM>
+            <UNIDADE>{{.Agreement.Agency}}</UNIDADE>
+            <DATA_HORA>{{fullDate today}}</DATA_HORA>
+            </sib:HEADER>
+         <DADOS>
+            <ALTERA_BOLETO>
+              <CODIGO_BENEFICIARIO>{{padLeft (toString .Agreement.AgreementNumber) "0" 7}}</CODIGO_BENEFICIARIO>
+               <TITULO>
+                  <NOSSO_NUMERO>{{toString .Title.OurNumber}}</NOSSO_NUMERO>
+
+                  <DATA_VENCIMENTO>{{enDate .Title.ExpireDateTime "-"}}</DATA_VENCIMENTO>
+                  <VALOR>{{toFloatStr .Title.AmountInCents}}</VALOR>
+                  <TIPO_ESPECIE>{{.Title.BoletoTypeCode}}</TIPO_ESPECIE>                        
+
+                  {{if .Title.JuroInCents }}  
+                     <JUROS_MORA>                        
+                        <TIPO>VALOR_POR_DIA</TIPO>
+                        {{if .Title.JuroDate }}
+                           <DATA>{{enDate .Title.JuroDateTime "-"}}</DATA>
+                        {{end}}
+                        <VALOR>{{toFloatStr .Title.JuroInCents}}</VALOR>
+                     </JUROS_MORA>
+                  {{else if .Title.JuroInPercentual }}  
+                     <JUROS_MORA>                        
+                        <TIPO>TAXA_MENSAL</TIPO>
+                        {{if .Title.JuroDate }}
+                           <DATA>{{enDate .Title.JuroDateTime "-"}}</DATA>
+                        {{end}}
+                        <PERCENTUAL>{{printf "%.2f" .Title.JuroInPercentual}}</PERCENTUAL>
+                     </JUROS_MORA>	
+                  {{else}}
+                     <JUROS_MORA>
+                        <TIPO>ISENTO</TIPO>
+                        <VALOR>0</VALOR>
+                     </JUROS_MORA>
+                  {{end}}                   
+
+                  {{if .Title.MultaInCents }} 
+                     <MULTA>                    
+                        <DATA>{{enDate .Title.MultaDateTime "-"}}</DATA>
+                        <VALOR>{{toFloatStr .Title.MultaInCents}}</VALOR>
+                     </MULTA>	
+                  {{else if .Title.MultaInPercentual }} 
+                     <MULTA>
+                        <DATA>{{enDate .Title.MultaDateTime "-"}}</DATA>
+                        <PERCENTUAL>{{printf "%.2f" .Title.MultaInPercentual}}</PERCENTUAL>
+                     </MULTA>	             
+                  {{end}}                            
+               </TITULO>
+            </ALTERA_BOLETO>
+           </DADOS>
+      </ext:SERVICO_ENTRADA>
+</soapenv:Body>
+</soapenv:Envelope>
+`
+
 func getRequestCaixa() string {
 	return incluiBoleto
 }
 
 func getResponseCaixa() string {
 	return responseCaixa
+}
+
+func getRequestAlteracaoCaixa() string {
+	return alteraBoleto
 }

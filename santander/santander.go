@@ -148,7 +148,7 @@ func (b bankSantander) GetBankNameIntegration() string {
 }
 
 func santanderBoletoTypes() map[string]string {
-  o.Do(func() {
+	o.Do(func() {
 		m = make(map[string]string)
 
 		m["DM"] = "02"  //Duplicata Mercantil
@@ -175,4 +175,12 @@ func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
 	}
 
 	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
+}
+
+func (b bankSantander) ProcessBoletoForEdit(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}
+
+func (b bankSantander) EditBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
 }

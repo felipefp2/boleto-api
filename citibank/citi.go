@@ -1,6 +1,7 @@
 package citibank
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -149,4 +150,12 @@ func getBoletoType(boleto *models.BoletoRequest) (bt string, btc string) {
 	}
 
 	return boleto.Title.BoletoType, btm[strings.ToUpper(boleto.Title.BoletoType)]
+}
+
+func (b bankCiti) ProcessBoletoForEdit(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
+}
+
+func (b bankCiti) EditBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	return models.BoletoResponse{}, errors.New("Not Implemented")
 }

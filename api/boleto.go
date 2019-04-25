@@ -88,6 +88,70 @@ func registerBoleto(c *gin.Context) {
 	c.Set("boletoResponse", resp)
 }
 
+//Altera um boleto em um determinado banco
+func editBoleto(c *gin.Context) {
+
+	if _, hasErr := c.Get("error"); hasErr {
+		return
+	}
+	_boleto, _ := c.Get("boleto")
+	_bank, _ := c.Get("bank")
+	bol := _boleto.(models.BoletoRequest)
+	bank := _bank.(bank.Bank)
+
+	lg := bank.Log()
+	lg.Operation = "EditBoleto"
+	lg.NossoNumero = bol.Title.OurNumber
+	lg.Recipient = bol.Recipient.Name
+	lg.RequestKey = bol.RequestKey
+	lg.BankName = bank.GetBankNameIntegration()
+	lg.IPAddress = c.ClientIP()
+
+	resp, err := bank.ProcessBoletoForEdit(&bol)
+	if checkError(c, err, lg) {
+		return
+	}
+
+	st := http.StatusOK
+	if len(resp.Errors) > 0 {
+
+		if resp.StatusCode > 0 {
+			st = resp.StatusCode
+		} else {
+			st = http.StatusBadRequest
+		}
+
+	} else {
+		mongo, errMongo := db.CreateMongo(lg)
+
+		boView := models.NewBoletoView(bol, resp, bank.GetBankNameIntegration())
+		mID, _ := boView.ID.MarshalText()
+		resp.ID = string(mID)
+		resp.Links = boView.Links
+
+		if errMongo == nil {
+			errMongo = mongo.SaveBoleto(boView)
+		}
+
+		redis := db.CreateRedis()
+
+		if errMongo != nil {
+			b := minifyJSON(boView)
+
+			err = redis.SetBoletoJSON(b, resp.ID, boView.PublicKey, lg)
+			if checkError(c, err, lg) {
+				return
+			}
+		}
+
+		bhtml, _ := boleto.HTML(boView, "html")
+		s := minifyString(bhtml, "text/html")
+		redis.SetBoletoHTML(s, resp.ID, boView.PublicKey, lg)
+	}
+	c.JSON(st, resp)
+	c.Set("boletoResponse", resp)
+}
+
 func getBoleto(c *gin.Context) {
 	c.Status(200)
 

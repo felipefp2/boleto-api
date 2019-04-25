@@ -77,6 +77,37 @@ func (b bankCaixa) RegisterBoleto(boleto *models.BoletoRequest) (models.BoletoRe
 	}
 	return models.BoletoResponse{}, models.NewInternalServerError("MP500", "Internal error")
 }
+func (b bankCaixa) EditBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+
+	boleto.Title.BoletoType, boleto.Title.BoletoTypeCode = getBoletoType(boleto)
+
+	r := flow.NewFlow()
+	urlCaixa := config.Get().URLCaixaRegisterBoleto
+	from := getResponseCaixa()
+	to := getAPIResponseCaixa()
+
+	bod := r.From("message://?source=inline", boleto, getRequestAlteracaoCaixa(), tmpl.GetFuncMaps())
+	bod = bod.To("logseq://?type=request&url="+urlCaixa, b.log)
+	duration := util.Duration(func() {
+		bod = bod.To(urlCaixa, map[string]string{"method": "POST", "insecureSkipVerify": "true", "timeout": config.Get().TimeoutDefault})
+	})
+	metrics.PushTimingMetric("caixa-edit-time", duration.Seconds())
+	bod = bod.To("logseq://?type=response&url="+urlCaixa, b.log)
+	ch := bod.Choice()
+	ch = ch.When(flow.Header("status").IsEqualTo("200"))
+	ch = ch.To("transform://?format=xml", from, to, tmpl.GetFuncMaps())
+	ch = ch.Otherwise()
+	ch = ch.To("logseq://?type=response&url="+urlCaixa, b.log).To("apierro://")
+
+	switch t := bod.GetBody().(type) {
+	case string:
+		response := util.ParseJSON(t, new(models.BoletoResponse)).(*models.BoletoResponse)
+		return *response, nil
+	case models.BoletoResponse:
+		return t, nil
+	}
+	return models.BoletoResponse{}, models.NewInternalServerError("MP500", "Internal error")
+}
 func (b bankCaixa) ProcessBoleto(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
 	errs := b.ValidateBoleto(boleto)
 	if len(errs) > 0 {
@@ -89,6 +120,19 @@ func (b bankCaixa) ProcessBoleto(boleto *models.BoletoRequest) (models.BoletoRes
 
 	boleto.Authentication.AuthorizationToken = b.getAuthToken(checkSum)
 	return b.RegisterBoleto(boleto)
+}
+func (b bankCaixa) ProcessBoletoForEdit(boleto *models.BoletoRequest) (models.BoletoResponse, error) {
+	errs := b.ValidateBoleto(boleto)
+	if len(errs) > 0 {
+		return models.BoletoResponse{Errors: errs}, nil
+	}
+
+	boleto.Title.OurNumber = b.FormatOurNumber(boleto.Title.OurNumber)
+
+	checkSum := b.getCheckSumCode(*boleto)
+
+	boleto.Authentication.AuthorizationToken = b.getAuthToken(checkSum)
+	return b.EditBoleto(boleto)
 }
 
 func (b bankCaixa) ValidateBoleto(boleto *models.BoletoRequest) models.Errors {
