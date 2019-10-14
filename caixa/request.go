@@ -57,7 +57,7 @@ const incluiBoleto = `
                   <VALOR>{{toFloatStr .Title.AmountInCents}}</VALOR>
                   <TIPO_ESPECIE>{{.Title.BoletoTypeCode}}</TIPO_ESPECIE>
                   <FLAG_ACEITE>S</FLAG_ACEITE>
-                  <DATA_EMISSAO>{{enDate today "-"}}</DATA_EMISSAO>                  
+                  <DATA_EMISSAO>{{enDate today "-"}}</DATA_EMISSAO> 
 
                   {{if .Title.JuroInCents }}  
                      <JUROS_MORA>                        
@@ -117,6 +117,26 @@ const incluiBoleto = `
                      </MULTA>	             
                   {{end}}
 
+                  {{if .Title.DescontoInCents }}  
+                     <DESCONTOS> 
+                        <DESCONTO>
+                           {{if .Title.DescontoDate }}
+                              <DATA>{{enDate .Title.DescontoDateTime "-"}}</DATA>
+                           {{end}}
+                           <VALOR>{{toFloatStr .Title.DescontoInCents}}</VALOR>                           
+                        </DESCONTO>
+                     </DESCONTOS>
+                  {{else if .Title.DescontoInPercentual }}  
+                     <DESCONTOS> 
+                        <DESCONTO>
+                           {{if .Title.DescontoDate }}
+                              <DATA>{{enDate .Title.DescontoDateTime "-"}}</DATA>
+                           {{end}}                        
+                           <PERCENTUAL>{{printf "%.2f" .Title.DescontoInPercentual}}</PERCENTUAL>
+                        </DESCONTO>
+                     </DESCONTOS>	  
+                  {{end}}
+
                   <FICHA_COMPENSACAO>
                      <MENSAGENS>
                         <MENSAGEM>{{clearString (truncate .Title.Instructions 40)}}</MENSAGEM>
@@ -160,7 +180,7 @@ const alteraBoleto = `
 
                   <DATA_VENCIMENTO>{{enDate .Title.ExpireDateTime "-"}}</DATA_VENCIMENTO>
                   <VALOR>{{toFloatStr .Title.AmountInCents}}</VALOR>
-                  <TIPO_ESPECIE>{{.Title.BoletoTypeCode}}</TIPO_ESPECIE>                        
+                  <TIPO_ESPECIE>{{.Title.BoletoTypeCode}}</TIPO_ESPECIE> 
 
                   {{if .Title.JuroInCents }}  
                      <JUROS_MORA>                        
@@ -195,7 +215,27 @@ const alteraBoleto = `
                         <DATA>{{enDate .Title.MultaDateTime "-"}}</DATA>
                         <PERCENTUAL>{{printf "%.2f" .Title.MultaInPercentual}}</PERCENTUAL>
                      </MULTA>	             
-                  {{end}}                            
+                  {{end}}    
+                  
+                  {{if .Title.DescontoInCents }}  
+                     <DESCONTOS> 
+                        <DESCONTO>
+                           {{if .Title.DescontoDate }}
+                              <DATA>{{enDate .Title.DescontoDate "-"}}</DATA>
+                           {{end}}
+                           <VALOR>{{toFloatStr .Title.DescontoInCents}}</VALOR>                           
+                        </DESCONTO>
+                     </DESCONTOS>
+                  {{else if .Title.DescontoInPercentual }}  
+                     <DESCONTOS> 
+                        <DESCONTO>
+                           {{if .Title.DescontoDate }}
+                              <DATA>{{enDate .Title.DescontoDate "-"}}</DATA>
+                           {{end}}                        
+                           <PERCENTUAL>{{printf "%.2f" .Title.DescontoInPercentual}}</PERCENTUAL>
+                        </DESCONTO>
+                     </DESCONTOS>	  
+                  {{end}}
                </TITULO>
             </ALTERA_BOLETO>
            </DADOS>

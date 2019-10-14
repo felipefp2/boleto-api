@@ -36,8 +36,23 @@ const registerBoleto = `
  <sch:codigoModalidadeTitulo>1</sch:codigoModalidadeTitulo>
  <sch:dataEmissaoTitulo>{{replace (today | brdate) "/" "."}}</sch:dataEmissaoTitulo>
  <sch:dataVencimentoTitulo>{{replace (.Title.ExpireDateTime | brdate) "/" "."}}</sch:dataVencimentoTitulo>
- <sch:valorOriginalTitulo>{{toFloatStr .Title.AmountInCents}}</sch:valorOriginalTitulo>
- <sch:codigoTipoDesconto>0</sch:codigoTipoDesconto> 	 
+ <sch:valorOriginalTitulo>{{toFloatStr .Title.AmountInCents}}</sch:valorOriginalTitulo>	
+ 
+ {{if .Title.DescontoInCents }}  
+	<sch:codigoTipoDesconto>1</sch:codigoTipoDesconto>
+	{{if .Title.DescontoDate }} 
+		<sch:dataDescontoTitulo>{{replace (.Title.DescontoDateTime | brdate) "/" "."}}</sch:dataDescontoTitulo>	
+	{{end}} 
+	<sch:percentualDescontoTitulo></sch:percentualDescontoTitulo>
+	<sch:valorDescontoTitulo>{{toFloatStr .Title.DescontoInCents}}</sch:valorDescontoTitulo>	
+ {{else if .Title.DescontoInPercentual }}  
+	<sch:codigoTipoDesconto>2</sch:codigoTipoDesconto> 		
+	<sch:dataDescontoTitulo></sch:dataDescontoTitulo>
+	<sch:percentualDescontoTitulo>{{printf "%.2f" .Title.DescontoInPercentual}}</sch:percentualDescontoTitulo>
+	<sch:valorDescontoTitulo></sch:valorDescontoTitulo>	
+ {{else}}
+ 	<sch:codigoTipoDesconto>0</sch:codigoTipoDesconto>
+ {{end}} 
 	 
  {{if .Title.JuroInCents }}  
  	<sch:codigoTipoJuroMora>1</sch:codigoTipoJuroMora> 

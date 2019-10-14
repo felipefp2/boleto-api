@@ -34,6 +34,7 @@ func New() bankCaixa {
 	b.validate.Push(validations.ValidateExpireDate)
 	b.validate.Push(validations.ValidateMultaDate)
 	b.validate.Push(validations.ValidateJuroDate)
+	b.validate.Push(validations.ValidateDescontoDate)
 	b.validate.Push(validations.ValidateBuyerDocumentNumber)
 	b.validate.Push(validations.ValidateRecipientDocumentNumber)
 	b.validate.Push(caixaValidateAgency)

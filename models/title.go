@@ -10,24 +10,28 @@ import (
 
 // Title título de cobrança de entrada
 type Title struct {
-	CreateDate        time.Time `json:"createDate,omitempty"`
-	ExpireDateTime    time.Time `json:"expireDateTime,omitempty"`
-	ExpireDate        string    `json:"expireDate,omitempty"`
-	AmountInCents     uint64    `json:"amountInCents,omitempty"`
-	OurNumber         uint      `json:"ourNumber,omitempty"`
-	Instructions      string    `json:"instructions,omitempty"`
-	DocumentNumber    string    `json:"documentNumber,omitempty"`
-	NSU               string    `json:"nsu,omitempty"`
-	JuroDate          string    `json:"juroDate,omitempty"`
-	JuroDateTime      time.Time `json:"JuroDateTime,omitempty"`
-	JuroInCents       uint64    `json:"juroInCents,omitempty"`
-	JuroInPercentual  float64   `json:"juroInPercentual,omitempty"`
-	MultaDate         string    `json:"multaDate,omitempty"`
-	MultaDateTime     time.Time `json:"MultaDateTime,omitempty"`
-	MultaInCents      uint64    `json:"multaInCents,omitempty"`
-	MultaInPercentual float64   `json:"multaInPercentual,omitempty"`
-	BoletoType        string    `json:"boletoType,omitempty"`
-	BoletoTypeCode    string
+	CreateDate           time.Time `json:"createDate,omitempty"`
+	ExpireDateTime       time.Time `json:"expireDateTime,omitempty"`
+	ExpireDate           string    `json:"expireDate,omitempty"`
+	AmountInCents        uint64    `json:"amountInCents,omitempty"`
+	OurNumber            uint      `json:"ourNumber,omitempty"`
+	Instructions         string    `json:"instructions,omitempty"`
+	DocumentNumber       string    `json:"documentNumber,omitempty"`
+	NSU                  string    `json:"nsu,omitempty"`
+	JuroDate             string    `json:"juroDate,omitempty"`
+	JuroDateTime         time.Time `json:"JuroDateTime,omitempty"`
+	JuroInCents          uint64    `json:"juroInCents,omitempty"`
+	JuroInPercentual     float64   `json:"juroInPercentual,omitempty"`
+	MultaDate            string    `json:"multaDate,omitempty"`
+	MultaDateTime        time.Time `json:"MultaDateTime,omitempty"`
+	MultaInCents         uint64    `json:"multaInCents,omitempty"`
+	MultaInPercentual    float64   `json:"multaInPercentual,omitempty"`
+	DescontoDate         string    `json:"descontoDate,omitempty"`
+	DescontoDateTime     time.Time `json:"descontoDateTime,omitempty"`
+	DescontoInCents      uint64    `json:"descontoInCents,omitempty"`
+	DescontoInPercentual float64   `json:"descontoInPercentual,omitempty"`
+	BoletoType           string    `json:"boletoType,omitempty"`
+	BoletoTypeCode       string
 }
 
 //ValidateInstructionsLength valida se texto das instruções possui quantidade de caracteres corretos
@@ -95,6 +99,22 @@ func (t *Title) IsJuroDateValid() error {
 	t.JuroDateTime = d
 	if t.ExpireDateTime == t.JuroDateTime || t.ExpireDateTime.After(t.JuroDateTime) {
 		return NewErrorResponse("MPJuroDate", "Data de juro não pode ser menor/igual que a data de vencimento")
+	}
+	return nil
+}
+
+//IsDescontoDateValid retorna um erro se a data de desconto for inválida
+func (t *Title) IsDescontoDateValid() error {
+	if t.DescontoDate == "" {
+		return nil
+	}
+	d, err := parseDate(t.DescontoDate)
+	if err != nil {
+		return NewErrorResponse("MPDescontoDate", fmt.Sprintf("Data em um formato inválido, esperamos AAAA-MM-DD e recebemos %s", t.ExpireDate))
+	}
+	t.DescontoDateTime = d
+	if t.ExpireDateTime == t.DescontoDateTime || t.DescontoDateTime.After(t.ExpireDateTime) {
+		return NewErrorResponse("MPDescontoDate", "Data de desconto não pode ser maior/igual que a data de vencimento")
 	}
 	return nil
 }
